@@ -11,7 +11,10 @@ import scalaj.http.{HttpResponse, Http}
 import json4s._
 import org.json4s.jackson.JsonMethods._
 /**
- * @author ${user.name}
+ * Main driver of the application. The real work is done by {com.goEuro.nirmalya.CitySuggestionListProducer}
+ * The driver creates an instance of it, passes the CITY name along and asks it to do the needful.
+ * Once the retrieved records come back here, they are written to a CSV file.
+ * @author nirmalya
  */
 object App {
 
@@ -32,8 +35,7 @@ object App {
 
     val cityNameSupplied = args(0)
 
-    println("Retrieving suggestions for < " + cityNameSupplied + ">")
-
+    println("Retrieving suggestions for < " + cityNameSupplied + " >")
 
     val listProducer = new CitySuggestionListProducer("./City-Suggestions.csv")
 

@@ -10,6 +10,9 @@ import scala.util.{Failure, Success, Try}
 import scalaj.http.HttpResponse
 
 /**
+ * The main work-horse of the application. It does the job of fetching information about a given CITY
+ * by calling the REST Service of GoEuro, and parsing the response, if possible. A successfully parsed
+ * response is transformed to a List of {@com.goEuro.nirmalya.Information}.
  * Created by nirmalya on 18/6/15.
  */
 class CitySuggestionListProducer (val csvFileName: String = "./City-Suggestions.csv" ) {
@@ -23,7 +26,9 @@ class CitySuggestionListProducer (val csvFileName: String = "./City-Suggestions.
 
   val inapplicable_geo_position = GeoPosition(0.0d, 0.0d)
 
-  // val defaultTargetURL = "http://api.goeuro.com/api/v2/position/suggest/en"
+  // Fetches a Http Response from the GoEuro URL provided, by supplying the name of the CITY
+  // as the parameter. Exceptions - if any raised - are caught and an appropriate Http Response
+  // is returned which indicates that all has not been well with the REST API call.
 
   def seekResponse(targetURL: String, city: String, service: GoEuroInfoProviderService) = {
 
@@ -36,6 +41,10 @@ class CitySuggestionListProducer (val csvFileName: String = "./City-Suggestions.
     }
   }
 
+  // Parses a Http Response. If the Response indicates that things have not gone well while fetching it
+  // from the GoEuro's REST Endpoint, then an appropriate {com.goEuro.nirmalya.Information} is created to
+  // encapsulate the incompleteness of REST API call; otherwise its payload-contents (JSON) are extracted
+  // to instances of {@com.goEuro.nirmalya.Information}.
   def parseResponse(response: HttpResponse[String]) = {
 
     response match {
@@ -71,6 +80,7 @@ class CitySuggestionListProducer (val csvFileName: String = "./City-Suggestions.
     }
   }
 
+  // Self-explanatory
   def saveAsCSV(informationBunch: List[Information]) = {
 
     Try {
@@ -103,7 +113,9 @@ class CitySuggestionListProducer (val csvFileName: String = "./City-Suggestions.
         }
 
         writerHandle.close
-      case Failure(ex) => println("Failed to save to file <" + csvFileName + ">, " + ex.getMessage)
+      case Failure(ex) =>
+        println("Failed to save to file <" + csvFileName + ">, " + ex.getMessage)
+        
     }
   }
 
